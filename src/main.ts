@@ -11,15 +11,23 @@ import { showReward, claim, registerRewardCallback } from './campaign/rewards.ts
 import { showEvent, showRest, skipRest, registerEventCallback } from './campaign/events.ts';
 import { engage as battleEngage } from './battle/engine.ts';
 import { stopAnimLoop } from './battle/renderer.ts';
+import { startTD as startTDGame, getTDState, registerTDCallbacks, toggleTDDebug } from './td/engine.ts';
+import { startTDLoop, stopTDLoop } from './td/renderer.ts';
 
 // ── Module state ──
 let selF: typeof FACTIONS[number] | null = null;
 let curEnemy: EnemyDef | null = null;
 let curStance: Stance | null = null;
+let tdKeyHandler: ((e: KeyboardEvent) => void) | null = null;
 
 // ── Screen routing ──
 function toTitle(): void {
   stopAnimLoop();
+  stopTDLoop();
+  if (tdKeyHandler) {
+    document.removeEventListener('keydown', tdKeyHandler);
+    tdKeyHandler = null;
+  }
   showScreen('title-screen');
   setMusicMode('menu');
 }
@@ -191,6 +199,55 @@ function showVictory(): void {
   sfx('victory');
 }
 
+// ── Tower Defense ──
+function startTD(): void {
+  stopAnimLoop();
+  stopTDLoop();
+  if (tdKeyHandler) {
+    document.removeEventListener('keydown', tdKeyHandler);
+    tdKeyHandler = null;
+  }
+  showScreen('td-screen');
+  setMusicMode('menu');
+
+  const canvas = document.getElementById('tdcanvas') as HTMLCanvasElement;
+  const log = document.getElementById('td-log')!;
+  log.innerHTML = '';
+
+  registerTDCallbacks(
+    (hp) => {
+      const d = document.createElement('div');
+      d.className = 'll ev';
+      d.textContent = `⚔ Enemy reached castle! HP: ${hp}/${getTDState().maxCastleHp}`;
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+    },
+    () => {
+      const d = document.createElement('div');
+      d.className = 'll res';
+      d.textContent = '☠ CASTLE DESTROYED — GAME OVER';
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+      stopTDLoop();
+    },
+  );
+
+  startTDGame();
+  startTDLoop(canvas);
+
+  tdKeyHandler = (e: KeyboardEvent) => {
+    if (e.key.toLowerCase() === 'd') {
+      toggleTDDebug();
+      const d = document.createElement('div');
+      d.className = 'll sys';
+      d.textContent = `[DEBUG] Enemy overlay: ${getTDState().debugOverlay ? 'ON' : 'OFF'}`;
+      log.appendChild(d);
+      log.scrollTop = log.scrollHeight;
+    }
+  };
+  document.addEventListener('keydown', tdKeyHandler);
+}
+
 // ── Sandbox ──
 let sbA: typeof FACTIONS[number] | null = null;
 let sbB: typeof FACTIONS[number] | null = null;
@@ -288,6 +345,7 @@ initAudioListeners();
 (window as unknown as Record<string, unknown>).toggleAudio = toggleAudio;
 (window as unknown as Record<string, unknown>).startCampaign = startCampaign;
 (window as unknown as Record<string, unknown>).startSandbox = startSandbox;
+(window as unknown as Record<string, unknown>).startTD = startTD;
 (window as unknown as Record<string, unknown>).beginCampaign = beginCampaign;
 (window as unknown as Record<string, unknown>).engage = doEngage;
 (window as unknown as Record<string, unknown>).claim = claim;

@@ -157,3 +157,27 @@ export interface RandomEvent {
   tx: string;
   ch: { l: string; fn: () => void }[];
 }
+
+export interface TDEnemy {
+  id: number;
+  pathIdx: number;
+  prog: number;
+  x: number;
+  y: number;
+  hp: number;
+  maxHp: number;
+  spd: number;
+  alive: boolean;
+  dmg: number;
+}
+
+export interface TDState {
+  castleHp: number;
+  maxCastleHp: number;
+  enemies: TDEnemy[];
+  wave: number;
+  spawnTimer: number;
+  spawnCount: number;
+  active: boolean;
+  debugOverlay: boolean;
+}

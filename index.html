@@ -16,6 +16,7 @@
   <div class="mode-select">
     <button class="btn gold mode-btn" onclick="startCampaign()"><span class="label">CAMPAIGN</span><span class="desc">12 battles · permadeath · build your legend</span></button>
     <button class="btn mode-btn" onclick="startSandbox()"><span class="label">SANDBOX</span><span class="desc">pick both sides · watch chaos</span></button>
+    <button class="btn mode-btn" onclick="startTD()"><span class="label">TOWER DEFENSE</span><span class="desc">defend the castle · fog of war · [D] debug</span></button>
   </div>
 </div>
 
@@ -81,6 +82,16 @@
   <div style="text-align:center;padding:12px 0 10px"><h2 style="color:var(--green);font-size:.8rem;letter-spacing:.18em">SANDBOX MODE</h2></div>
   <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:start" id="sb-arena"></div>
   <div style="text-align:center;margin-top:10px"><button class="btn" style="font-size:.48rem;padding:5px 10px" onclick="toTitle()">← BACK</button></div>
+</div>
+
+<div class="screen" id="td-screen">
+  <div class="td-hdr">
+    <div style="font-family:Orbitron,monospace;font-size:.65rem;color:var(--gold);letter-spacing:.15em">🗼 TOWER DEFENSE</div>
+    <div style="font-size:.5rem;color:var(--muted)">PRESS [D] TO TOGGLE DEBUG OVERLAY</div>
+    <button class="btn" style="font-size:.45rem;padding:4px 8px" onclick="toTitle()">← BACK</button>
+  </div>
+  <canvas id="tdcanvas"></canvas>
+  <div id="td-log" class="blog" style="height:80px;margin-top:6px"></div>
 </div>
 
 <script type="module" src="/src/main.ts"></script>

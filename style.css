@@ -144,3 +144,6 @@ h1,h2,h3{font-family:'Orbitron',monospace}
 .sb-btn .em{font-size:1rem;display:block;margin-bottom:2px}
 
 @media(max-width:600px){.fc-grid{grid-template-columns:1fr 1fr}.rcards,.rest-opts,.enc-grid,.sgrid{grid-template-columns:1fr}.tactics-bar{gap:4px}}
+
+#tdcanvas{width:100%;height:300px;border:1px solid var(--border);background:var(--bg);display:block}
+.td-hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);margin-bottom:8px;flex-wrap:wrap;gap:6px}
