@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WARPATH — Tactical Roguelike</title>
+</head>
+<body>
+<div class="scan"></div>
+<button class="audio-toggle" id="atog" onclick="toggleAudio()">♪ OFF</button>
+
+<div class="screen active" id="title-screen">
+  <h1>⚔ WARPATH ⚔</h1>
+  <div style="font-size:.6rem;color:var(--muted);letter-spacing:.35em">TACTICAL ROGUELIKE BATTLE SIMULATOR</div>
+  <div class="tag green">▶ 100% SCIENTIFICALLY ACCURATE ◀</div>
+  <div class="mode-select">
+    <button class="btn gold mode-btn" onclick="startCampaign()"><span class="label">CAMPAIGN</span><span class="desc">12 battles · permadeath · build your legend</span></button>
+    <button class="btn mode-btn" onclick="startSandbox()"><span class="label">SANDBOX</span><span class="desc">pick both sides · watch chaos</span></button>
+  </div>
+</div>
+
+<div class="screen" id="faction-screen">
+  <h2 style="text-align:center;color:var(--green);font-size:.95rem;letter-spacing:.18em;margin-bottom:5px">CHOOSE YOUR WARBAND</h2>
+  <div style="text-align:center;font-size:.55rem;color:var(--muted);letter-spacing:.12em;margin-bottom:16px">YOUR ARMY · YOUR RULES · YOUR FUNERAL</div>
+  <div class="fc-grid" id="fcards"></div>
+  <div style="text-align:center;margin-top:14px"><button class="btn gold" id="begin-btn" onclick="beginCampaign()" disabled>BEGIN CAMPAIGN</button></div>
+</div>
+
+<div class="screen" id="map-screen">
+  <div class="map-hdr"><div class="ri">ACT <span id="m-act">1</span> — BATTLE <span id="m-bat">1</span>/12</div><div class="gold-display">💰 <span id="m-gold">100</span></div><div class="ri">KILLS: <span id="m-kills">0</span></div></div>
+  <div class="abox" id="abox"></div>
+  <div style="font-family:Orbitron,monospace;font-size:.55rem;color:var(--muted);letter-spacing:.18em;margin-bottom:8px">CHOOSE YOUR PATH</div>
+  <div class="enc-grid" id="enc-grid"></div>
+</div>
+
+<div class="screen" id="prebattle">
+  <div class="eprev" id="eprev"></div>
+  <div style="font-family:Orbitron,monospace;font-size:.55rem;color:var(--gold);letter-spacing:.18em;margin:14px 0 8px">CHOOSE YOUR STANCE</div>
+  <div class="sgrid" id="sgrid"></div>
+  <div style="text-align:center;margin-top:6px"><button class="btn red" id="eng-btn" onclick="engage()" disabled>ENGAGE</button></div>
+</div>
+
+<div class="screen" id="battle-screen">
+  <div class="bhud" id="bhud"></div>
+  <canvas id="bcanvas"></canvas>
+  <div class="tactics-bar" id="tbar"></div>
+  <div class="blog" id="blog"></div>
+</div>
+
+<div class="screen" id="reward">
+  <h2 style="color:var(--gold);font-size:.85rem;letter-spacing:.18em;margin-bottom:5px;text-align:center">SPOILS OF WAR</h2>
+  <div style="font-size:.55rem;color:var(--muted);margin-bottom:16px;text-align:center" id="rsub">CHOOSE ONE</div>
+  <div class="rcards" id="rcards"></div>
+  <div style="text-align:center"><button class="btn cyan" id="claim-btn" onclick="claim()" disabled>CLAIM & CONTINUE</button></div>
+</div>
+
+<div class="screen" id="rest-scr">
+  <h2 style="color:var(--green);font-size:.85rem;letter-spacing:.18em;margin-bottom:5px;text-align:center">⛺ RESPITE</h2>
+  <div style="font-size:.55rem;color:var(--muted);margin-bottom:16px;text-align:center">SPEND GOLD TO RECOVER — <span class="gold-display">💰 <span id="rest-gold">0</span></span></div>
+  <div class="rest-opts" id="rest-opts"></div>
+  <div style="text-align:center;margin-top:8px"><button class="btn" onclick="skipRest()">SKIP & CONTINUE</button></div>
+</div>
+
+<div class="screen" id="event-scr"><div class="ebox" id="ebox"></div></div>
+
+<div class="screen" id="gameover">
+  <h1 style="color:var(--red);font-size:clamp(1.2rem,4vw,2rem);letter-spacing:.12em;margin-bottom:8px;text-align:center">☠ DEFEAT ☠</h1>
+  <div style="color:var(--muted);font-size:.58rem;margin-bottom:16px;text-align:center">YOUR WARBAND HAS FALLEN</div>
+  <div class="rstats" id="go-stats"></div>
+  <div style="text-align:center"><button class="btn gold" onclick="toTitle()">TRY AGAIN</button></div>
+</div>
+
+<div class="screen" id="victory">
+  <h1 style="font-size:clamp(1.3rem,5vw,2.3rem);color:var(--gold);letter-spacing:.12em;animation:tp 2s ease-in-out infinite;margin-bottom:8px;text-align:center">🏆 TOTAL VICTORY 🏆</h1>
+  <div style="color:var(--muted);font-size:.6rem;letter-spacing:.25em;margin-bottom:16px;text-align:center">THE WARPATH IS CONQUERED</div>
+  <div class="rstats" id="vic-stats"></div>
+  <div style="text-align:center"><button class="btn gold" onclick="toTitle()">PLAY AGAIN</button></div>
+</div>
+
+<div class="screen" id="sandbox-scr">
+  <div style="text-align:center;padding:12px 0 10px"><h2 style="color:var(--green);font-size:.8rem;letter-spacing:.18em">SANDBOX MODE</h2></div>
+  <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:start" id="sb-arena"></div>
+  <div style="text-align:center;margin-top:10px"><button class="btn" style="font-size:.48rem;padding:5px 10px" onclick="toTitle()">← BACK</button></div>
+</div>
+
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
