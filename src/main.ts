@@ -2,7 +2,7 @@ import '../style.css';
 import type { BattleSide, EnemyDef, Stance } from './types.ts';
 import { FACTIONS, WARRIOR_NAMES } from './factions/index.ts';
 import { SKILLS, HERO_PERKS } from './factions/skills.ts';
-import { toggleAudio, setMusicMode, sfx, initAudioListeners } from './audio/engine.ts';
+import { toggleAudio, setMusicMode, setVolume, sfx, initAudioListeners } from './audio/engine.ts';
 import { freshState, freshSandboxState, getGameState, setGameState, S, F, P } from './campaign/state.ts';
 import { showScreen } from './ui/screens.ts';
 import { statRow } from './ui/components.ts';
@@ -306,6 +306,7 @@ initAudioListeners();
 
 // Expose handlers to HTML onclick attributes
 (window as unknown as Record<string, unknown>).toggleAudio = toggleAudio;
+(window as unknown as Record<string, unknown>).setVolume = setVolume;
 (window as unknown as Record<string, unknown>).startCampaign = startCampaign;
 (window as unknown as Record<string, unknown>).startSandbox = startSandbox;
 (window as unknown as Record<string, unknown>).beginCampaign = beginCampaign;
