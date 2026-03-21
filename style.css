@@ -22,7 +22,8 @@ h1,h2,h3{font-family:'Orbitron',monospace}
 .tag.purple{border-color:var(--pdim);color:var(--purple);background:rgba(199,125,255,.06)}
 .gold-display{font-family:'Orbitron',monospace;font-size:.6rem;color:var(--gold);letter-spacing:.1em}
 
-#title-screen{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+#title-screen{text-align:center;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.screen.active#title-screen{display:flex}
 #title-screen h1{font-size:clamp(1.6rem,5vw,3rem);font-weight:900;color:var(--green);text-shadow:0 0 30px rgba(57,255,20,.5),0 0 60px rgba(57,255,20,.15);letter-spacing:.15em;animation:tp 3s ease-in-out infinite}
 @keyframes tp{0%,100%{text-shadow:0 0 30px rgba(57,255,20,.5)}50%{text-shadow:0 0 50px rgba(57,255,20,.7),0 0 80px rgba(57,255,20,.3)}}
 .mode-select{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
