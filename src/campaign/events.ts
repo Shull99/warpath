@@ -1,4 +1,4 @@
-import type { RandomEvent } from '../types.ts';
+import type { RandomEvent, EnemyDef } from '../types.ts';
 import { HERO_PERKS } from '../factions/skills.ts';
 import { getGameState } from './state.ts';
 import { sfx } from '../audio/engine.ts';
@@ -6,9 +6,13 @@ import { showScreen } from '../ui/screens.ts';
 import { F, P } from './state.ts';
 
 let _onEventDone: (() => void) | null = null;
+let _showPre: ((enemy: EnemyDef) => void) | null = null;
+let _showMapFn: (() => void) | null = null;
 
-export function registerEventCallback(onDone: () => void): void {
+export function registerEventCallback(onDone: () => void, showPre?: (enemy: EnemyDef) => void, showMapFn?: () => void): void {
   _onEventDone = onDone;
+  if (showPre) _showPre = showPre;
+  if (showMapFn) _showMapFn = showMapFn;
 }
 
 function makeEvents(): RandomEvent[] {
@@ -98,10 +102,10 @@ export function showRest(): void {
   const rAmt = Math.floor(G.mx * 0.15);
 
   const opts = [
-    { n: 'REST & HEAL', d: `Recover ${F(hAmt)} troops (25%)`, cost: 40, fn: () => { G.cs = Math.min(G.mx, G.cs + hAmt); } },
-    { n: 'RECRUIT', d: `+${F(rAmt)} fresh troops & raise max`, cost: 60, fn: () => { G.mx += rAmt; G.cs += rAmt; } },
-    { n: 'TRAINING', d: '+6 ATK, +6 DEF permanently', cost: 50, fn: () => { G.pAtk += 6; G.pDef += 6; } },
-    { n: 'FORGE WEAPONS', d: 'Dmg ×1.25 permanently', cost: 75, fn: () => { G.pDM += 0.25; } },
+    { n: 'REST & HEAL', d: `Recover ${F(hAmt)} troops (25%)`, cost: 25, fn: () => { G.cs = Math.min(G.mx, G.cs + hAmt); } },
+    { n: 'RECRUIT', d: `+${F(rAmt)} fresh troops & raise max`, cost: 40, fn: () => { G.mx += rAmt; G.cs += rAmt; } },
+    { n: 'TRAINING', d: '+5 ATK, +5 DEF permanently', cost: 35, fn: () => { G.pAtk += 5; G.pDef += 5; } },
+    { n: 'FORGE WEAPONS', d: 'Dmg ×1.15 permanently', cost: 50, fn: () => { G.pDM += 0.15; } },
   ];
 
   opts.forEach(o => {
@@ -126,4 +130,83 @@ export function skipRest(): void {
   const G = getGameState();
   G.bn++;
   _onEventDone?.();
+}
+
+export function showRecruit(): void {
+  const G = getGameState();
+  showScreen('rest-scr');
+  document.getElementById('rest-gold')!.textContent = String(G.gold);
+
+  const el = document.getElementById('rest-opts')!;
+  el.innerHTML = '';
+  const scoutCount = Math.max(1, Math.floor(G.mx * 0.08));
+  const soldierCount = Math.max(2, Math.floor(G.mx * 0.15));
+  const veteranCount = Math.max(3, Math.floor(G.mx * 0.25));
+
+  const opts = [
+    { n: 'HIRE SCOUTS', d: `+${F(scoutCount)} light troops`, cost: 15, fn: () => { G.mx += scoutCount; G.cs += scoutCount; } },
+    { n: 'RECRUIT SOLDIERS', d: `+${F(soldierCount)} troops & raise max`, cost: 35, fn: () => { G.mx += soldierCount; G.cs += soldierCount; } },
+    { n: 'HIRE VETERANS', d: `+${F(veteranCount)} elite troops, +3 ATK`, cost: 55, fn: () => { G.mx += veteranCount; G.cs += veteranCount; G.pAtk += 3; } },
+  ];
+
+  const titleEl = document.querySelector('#rest-scr h2');
+  if (titleEl) titleEl.textContent = '📯 WANDERING WARBAND';
+
+  opts.forEach(o => {
+    const locked = G.gold < o.cost;
+    const c = document.createElement('div');
+    c.className = 'roc' + (locked ? ' locked' : '');
+    c.innerHTML = `<div class="rcn">${o.n}</div><div class="rcd">${o.d}</div><div class="cost">💰 ${o.cost} gold${locked ? ' — NOT ENOUGH' : ''}</div>`;
+    if (!locked) {
+      c.onclick = () => {
+        G.gold -= o.cost;
+        o.fn();
+        sfx('gold');
+        G.bn++;
+        _onEventDone?.();
+      };
+    }
+    el.appendChild(c);
+  });
+}
+
+export function showScout(enemy: EnemyDef): void {
+  const G = getGameState();
+  showScreen('event-scr');
+  const ratio = enemy.size / G.cs;
+  const diff = ratio < 0.6 ? 'EASY' : ratio < 0.9 ? 'MEDIUM' : ratio < 1.3 ? 'HARD' : 'DEADLY';
+  const yourAtk = G.f.atk + G.pAtk;
+  const yourDef = G.f.def + G.pDef;
+
+  document.getElementById('ebox')!.innerHTML = `<div class="etitle">📜 SCOUT REPORT</div>
+    <div class="etext">
+      <div style="margin-bottom:8px">Your scouts report on <b style="color:var(--red)">${enemy.emoji} ${enemy.name}</b>:</div>
+      <div class="scout-grid">
+        <div class="scout-col"><div class="scout-label" style="color:var(--green)">YOUR ARMY</div>
+          <div>Troops: <b>${F(G.cs)}</b></div>
+          <div>ATK: <b>${yourAtk}</b></div>
+          <div>DEF: <b>${yourDef}</b></div></div>
+        <div class="scout-vs">VS</div>
+        <div class="scout-col"><div class="scout-label" style="color:var(--red)">ENEMY</div>
+          <div>Troops: <b>${F(enemy.size)}</b></div>
+          <div>ATK: <b>${enemy.atk}</b></div>
+          <div>DEF: <b>${enemy.def}</b></div></div>
+      </div>
+      <div style="text-align:center;margin-top:8px">Difficulty: <b style="color:${diff === 'EASY' ? 'var(--green)' : diff === 'MEDIUM' ? 'var(--gold)' : 'var(--red)'}">${diff}</b></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:7px" id="ech"></div>`;
+
+  const engBtn = document.createElement('button');
+  engBtn.className = 'btn red';
+  engBtn.style.cssText = 'width:100%;text-align:center;font-size:.52rem';
+  engBtn.textContent = `⚔ ENGAGE ${enemy.name.toUpperCase()}`;
+  engBtn.onclick = () => { _showPre?.(enemy); };
+  document.getElementById('ech')!.appendChild(engBtn);
+
+  const retreatBtn = document.createElement('button');
+  retreatBtn.className = 'btn';
+  retreatBtn.style.cssText = 'width:100%;text-align:left;font-size:.52rem';
+  retreatBtn.textContent = 'Retreat (return to map)';
+  retreatBtn.onclick = () => { _showMapFn?.(); };
+  document.getElementById('ech')!.appendChild(retreatBtn);
 }

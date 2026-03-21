@@ -8,10 +8,11 @@ export interface TacticalState {
   _fireSpec?: boolean;
   rallyLeft: number;
   braceLeft: number;
+  cp: number;
 }
 
 export function freshTacticalState(): TacticalState {
-  return { rally: 0, brace: 0, spec: 0, rallyLeft: 0, braceLeft: 0 };
+  return { rally: 0, brace: 0, spec: 0, rallyLeft: 0, braceLeft: 0, cp: 3 };
 }
 
 export function buildTacticsBar(
@@ -24,13 +25,22 @@ export function buildTacticsBar(
 ): void {
   bar.innerHTML = '';
 
-  // Rally
+  // Command Points display
+  const cpDiv = document.createElement('div');
+  cpDiv.className = 'cp-display';
+  cpDiv.innerHTML = `<span class="cp-label">CP</span>${Array.from({ length: 3 }, (_, i) => `<span class="cp-pip${i < tac.cp ? ' active' : ''}">${i < tac.cp ? '◆' : '◇'}</span>`).join('')}`;
+  bar.appendChild(cpDiv);
+
+  // Rally (1 CP)
   const rBtn = document.createElement('button');
-  rBtn.className = 'tac-btn rally' + (tac.rally > 0 ? ' cd' : '');
-  rBtn.innerHTML = `🗡 RALLY` + (tac.rally > 0 ? ` <span style="color:var(--muted)">(${tac.rally})</span>` : '');
-  rBtn.disabled = tac.rally > 0 || !battleActive;
+  const rDisabled = tac.rally > 0 || !battleActive || tac.cp < 1;
+  rBtn.className = 'tac-btn rally' + (tac.rally > 0 ? ' cd' : '') + (tac.cp < 1 && tac.rally <= 0 ? ' no-cp' : '');
+  rBtn.innerHTML = `🗡 RALLY` + (tac.rally > 0 ? ` <span style="color:var(--muted)">(${tac.rally})</span>` : ' <span class="cp-cost">1CP</span>');
+  rBtn.title = 'ATK +25 for 3 rounds (costs 1 Command Point)';
+  rBtn.disabled = rDisabled;
   rBtn.onclick = () => {
-    if (tac.rally > 0 || !battleActive) return;
+    if (rDisabled) return;
+    tac.cp--;
     tac.rally = 6;
     tac.rallyLeft = 3;
     sfx('tactic');
@@ -38,13 +48,16 @@ export function buildTacticsBar(
   };
   bar.appendChild(rBtn);
 
-  // Brace
+  // Brace (1 CP)
   const bBtn = document.createElement('button');
-  bBtn.className = 'tac-btn brace' + (tac.brace > 0 ? ' cd' : '');
-  bBtn.innerHTML = `🛡 BRACE` + (tac.brace > 0 ? ` <span style="color:var(--muted)">(${tac.brace})</span>` : '');
-  bBtn.disabled = tac.brace > 0 || !battleActive;
+  const bDisabled = tac.brace > 0 || !battleActive || tac.cp < 1;
+  bBtn.className = 'tac-btn brace' + (tac.brace > 0 ? ' cd' : '') + (tac.cp < 1 && tac.brace <= 0 ? ' no-cp' : '');
+  bBtn.innerHTML = `🛡 BRACE` + (tac.brace > 0 ? ` <span style="color:var(--muted)">(${tac.brace})</span>` : ' <span class="cp-cost">1CP</span>');
+  bBtn.title = 'DEF +30 for 3 rounds (costs 1 Command Point)';
+  bBtn.disabled = bDisabled;
   bBtn.onclick = () => {
-    if (tac.brace > 0 || !battleActive) return;
+    if (bDisabled) return;
+    tac.cp--;
     tac.brace = 6;
     tac.braceLeft = 3;
     sfx('tactic');
@@ -52,13 +65,16 @@ export function buildTacticsBar(
   };
   bar.appendChild(bBtn);
 
-  // Special
+  // Special (2 CP)
   const sBtn = document.createElement('button');
-  sBtn.className = 'tac-btn spec' + (tac.spec > 0 ? ' cd' : '');
-  sBtn.innerHTML = `⚡ ${fA.special}` + (tac.spec > 0 ? ` <span style="color:var(--muted)">(${tac.spec})</span>` : '');
-  sBtn.disabled = tac.spec > 0 || !battleActive;
+  const sDisabled = tac.spec > 0 || !battleActive || tac.cp < 2;
+  sBtn.className = 'tac-btn spec' + (tac.spec > 0 ? ' cd' : '') + (tac.cp < 2 && tac.spec <= 0 ? ' no-cp' : '');
+  sBtn.innerHTML = `⚡ ${fA.special}` + (tac.spec > 0 ? ` <span style="color:var(--muted)">(${tac.spec})</span>` : ' <span class="cp-cost">2CP</span>');
+  sBtn.title = `${fA.special}: ${fA.spDesc} (costs 2 Command Points)`;
+  sBtn.disabled = sDisabled;
   sBtn.onclick = () => {
-    if (tac.spec > 0 || !battleActive) return;
+    if (sDisabled) return;
+    tac.cp -= 2;
     tac.spec = 8;
     tac._fireSpec = true;
     sfx('tactic');
