@@ -139,20 +139,18 @@ export function showRecruit(): void {
 
   const el = document.getElementById('rest-opts')!;
   el.innerHTML = '';
-  const sm = Math.max(1, Math.floor(G.mx * 0.08));
-  const md = Math.max(2, Math.floor(G.mx * 0.15));
-  const lg = Math.max(3, Math.floor(G.mx * 0.25));
+  const scoutCount = Math.max(1, Math.floor(G.mx * 0.08));
+  const soldierCount = Math.max(2, Math.floor(G.mx * 0.15));
+  const veteranCount = Math.max(3, Math.floor(G.mx * 0.25));
 
   const opts = [
-    { n: 'HIRE SCOUTS', d: `+${F(sm)} light troops`, cost: 15, fn: () => { G.mx += sm; G.cs += sm; } },
-    { n: 'RECRUIT SOLDIERS', d: `+${F(md)} troops & raise max`, cost: 35, fn: () => { G.mx += md; G.cs += md; } },
-    { n: 'HIRE VETERANS', d: `+${F(lg)} elite troops, +3 ATK`, cost: 55, fn: () => { G.mx += lg; G.cs += lg; G.pAtk += 3; } },
+    { n: 'HIRE SCOUTS', d: `+${F(scoutCount)} light troops`, cost: 15, fn: () => { G.mx += scoutCount; G.cs += scoutCount; } },
+    { n: 'RECRUIT SOLDIERS', d: `+${F(soldierCount)} troops & raise max`, cost: 35, fn: () => { G.mx += soldierCount; G.cs += soldierCount; } },
+    { n: 'HIRE VETERANS', d: `+${F(veteranCount)} elite troops, +3 ATK`, cost: 55, fn: () => { G.mx += veteranCount; G.cs += veteranCount; G.pAtk += 3; } },
   ];
 
   const titleEl = document.querySelector('#rest-scr h2');
   if (titleEl) titleEl.textContent = '📯 WANDERING WARBAND';
-  const subEl = document.querySelector('#rest-scr .gold-display');
-  if (subEl) subEl.parentElement!.childNodes[0]!.textContent = 'DISPLACED SOLDIERS SEEK A LEADER — ';
 
   opts.forEach(o => {
     const locked = G.gold < o.cost;
