@@ -15,9 +15,9 @@ export function freshState(f: FactionDef): GameState {
   return {
     mode: 'campaign',
     f: { ...f },
-    mx: 1000,
-    cs: 1000,
-    gold: 100,
+    mx: 120,
+    cs: 120,
+    gold: 60,
     pAtk: 0,
     pDef: 0,
     pDM: 0,

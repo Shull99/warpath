@@ -150,7 +150,7 @@ function runBattle(
     // Fortify
     if (sA.fort && rnd <= 3) sA.tDef += sA.def;
     if (sB.fort && rnd <= 3) sB.tDef += sB.def;
-    if (rnd % 5 === 1 || rnd === 1) al(`── Round ${rnd} ──────────────────────`, 'sys');
+    if (rnd % 3 === 1 || rnd === 1) al(`── Round ${rnd} ──────────────────────`, 'sys');
 
     // Guaranteed special round 1
     if (sA.gSpec && rnd === 1) {
@@ -186,10 +186,10 @@ function runBattle(
     killParticles(canvas, 'a', dA, pA);
     killParticles(canvas, 'b', dB, pB);
     if (Math.random() < 0.4) sfx('hit');
-    if (Math.random() < 0.22) al(`  [${fA.emoji}] ${P(fA.fl)}`, 'sys');
-    if (Math.random() < 0.22) al(`  [${fB.emoji}] ${P(fB.fl)}`, 'sys');
-    if (Math.random() < 0.18) al(`★ ${P(nA)} executes '${randomCombo()}' — ${ri(12, 120)} enemies fall`, 'na');
-    if (Math.random() < 0.18) al(`★ ${P(nB)} unleashes '${randomCombo()}'`, 'nb');
+    if (Math.random() < 0.12) al(`  [${fA.emoji}] ${P(fA.fl)}`, 'sys');
+    if (Math.random() < 0.12) al(`  [${fB.emoji}] ${P(fB.fl)}`, 'sys');
+    if (Math.random() < 0.10) al(`★ ${P(nA)} executes '${randomCombo()}' — ${ri(2, Math.max(3, Math.ceil(dB * 0.3)))} enemies fall`, 'na');
+    if (Math.random() < 0.10) al(`★ ${P(nB)} unleashes '${randomCombo()}'`, 'nb');
 
     if (G.mode === 'campaign' && Math.random() < 0.035 && sA.cs / sA.ss < 0.35) {
       const alive = G.heroes.filter(h => h.alive);
@@ -218,7 +218,16 @@ function runBattle(
     else { al(`DEFEAT: ${fA.name.toUpperCase()} destroyed.`, 'res'); sfx('defeat'); }
     rebuildBar();
 
-    const goldEarned = ((G as { _curEnemy?: { isBoss: boolean } })._curEnemy?.isBoss) ? ri(80, 150) : ri(30, 80);
+    const isBoss = ((G as { _curEnemy?: { isBoss: boolean } })._curEnemy?.isBoss);
+    const baseGold = Math.floor(20 + sB.ss * 0.25);
+    const efficiencyBonus = won ? Math.floor(baseGold * (aA / sA.ss) * 0.5) : 0;
+    const goldEarned = isBoss ? Math.floor(baseGold * 1.5 + efficiencyBonus) : baseGold + efficiencyBonus;
+
+    if (won) {
+      al(`💰 Gold: ${goldEarned} (base: ${baseGold}${efficiencyBonus > 0 ? ` + efficiency: ${efficiencyBonus}` : ''})`, 'tac');
+      const lost = sA.ss - aA;
+      al(`📊 Troops lost: ${F(lost)} | Remaining: ${F(aA)} / ${F(sA.ss)}`, 'sys');
+    }
 
     setTimeout(() => {
       onEnd(won, aA, eK, goldEarned);

@@ -144,3 +144,56 @@ h1,h2,h3{font-family:'Orbitron',monospace}
 .sb-btn .em{font-size:1rem;display:block;margin-bottom:2px}
 
 @media(max-width:600px){.fc-grid{grid-template-columns:1fr 1fr}.rcards,.rest-opts,.enc-grid,.sgrid{grid-template-columns:1fr}.tactics-bar{gap:4px}}
+
+/* WAR COUNCIL */
+.wc-section{margin-bottom:14px;border:1px solid var(--border);background:var(--panel);padding:10px}
+.wc-header{font-family:'Orbitron',monospace;font-size:.5rem;color:var(--gold);letter-spacing:.14em;margin-bottom:8px}
+.wc-grid{display:flex;gap:6px;flex-wrap:wrap}
+.wc-btn{background:var(--bg2);border:1px solid var(--border2);padding:7px 10px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;flex:1;min-width:120px}
+.wc-btn:hover:not(.locked){border-color:var(--gold);background:var(--glfaint);transform:translateY(-1px)}
+.wc-btn.locked{opacity:.35;cursor:not-allowed}
+.wc-btn .wc-name{font-family:'Share Tech Mono',monospace;font-size:.5rem;color:var(--text);white-space:nowrap}
+.wc-btn .wc-desc{font-size:.45rem;color:var(--muted);flex:1}
+.wc-btn .wc-cost{font-size:.45rem;color:var(--gold);white-space:nowrap}
+
+/* ARMY STATS CHIPS */
+.army-stats{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.stat-chip{font-size:.48rem;padding:2px 6px;border:1px solid var(--border);background:var(--bg2);color:var(--muted)}
+.stat-chip.atk{border-color:var(--rdim);color:var(--red)}
+.stat-chip.def{border-color:var(--gdim);color:var(--green)}
+.stat-chip.spd{border-color:var(--gldim);color:var(--gold)}
+.stat-chip.dmg{border-color:var(--rdim);color:var(--red)}
+.stat-chip.dge{border-color:var(--cdim);color:var(--cyan)}
+
+/* COMMAND POINTS */
+.cp-display{display:flex;align-items:center;gap:3px;padding:4px 8px;background:var(--bg2);border:1px solid var(--border);margin-right:4px}
+.cp-label{font-family:'Orbitron',monospace;font-size:.42rem;color:var(--muted);letter-spacing:.1em;margin-right:2px}
+.cp-pip{font-size:.55rem;color:var(--border2)}.cp-pip.active{color:var(--gold);text-shadow:0 0 4px rgba(255,215,0,.4)}
+.cp-cost{font-size:.4rem;color:var(--gldim);margin-left:4px}
+.tac-btn.no-cp{opacity:.25;cursor:not-allowed}
+
+/* PRE-BATTLE COMPARE */
+.prebattle-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-bottom:6px}
+.pre-col{text-align:center}.pre-col.you .pre-label{color:var(--green)}.pre-col.enemy .pre-label{color:var(--red)}
+.pre-label{font-family:'Orbitron',monospace;font-size:.5rem;letter-spacing:.1em;margin-bottom:4px}
+.pre-num{font-size:.55rem;color:var(--text);margin-bottom:4px}
+.pre-stats{display:flex;justify-content:center;gap:8px;font-size:.48rem;color:var(--muted)}
+.pre-stats b{color:var(--text)}
+.pre-vs{text-align:center;padding:0 8px}
+.pre-diff{font-family:'Orbitron',monospace;font-size:.42rem;letter-spacing:.12em;margin-top:2px}
+
+/* SCOUT GRID */
+.scout-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin:8px 0}
+.scout-col{font-size:.52rem;text-align:center}.scout-col b{color:var(--text)}
+.scout-label{font-family:'Orbitron',monospace;font-size:.48rem;letter-spacing:.1em;margin-bottom:4px}
+.scout-vs{font-family:'Orbitron',monospace;font-size:.6rem;color:var(--gold)}
+
+/* DIFFICULTY LABELS */
+.diff{font-size:.42rem;font-family:'Orbitron',monospace;letter-spacing:.08em;padding:1px 5px;border:1px solid;display:inline-block;vertical-align:middle;margin-left:4px}
+.diff.easy{border-color:var(--gdim);color:var(--green);background:var(--gfaint)}
+.diff.medium{border-color:var(--gldim);color:var(--gold);background:var(--glfaint)}
+.diff.hard{border-color:var(--rdim);color:var(--red);background:var(--rfaint)}
+.diff.deadly{border-color:#7a0808;color:#ff3939;background:rgba(255,57,57,0.12);text-shadow:0 0 4px rgba(255,57,57,.3)}
+
+/* NEW ENCOUNTER TYPES */
+.ec.recruit .et{color:var(--gold)}.ec.scout .et{color:var(--purple)}

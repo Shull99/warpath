@@ -8,7 +8,7 @@ import { showScreen } from './ui/screens.ts';
 import { statRow } from './ui/components.ts';
 import { showMap, registerMapCallbacks } from './campaign/map.ts';
 import { showReward, claim, registerRewardCallback } from './campaign/rewards.ts';
-import { showEvent, showRest, skipRest, registerEventCallback } from './campaign/events.ts';
+import { showEvent, showRest, skipRest, showRecruit, showScout, registerEventCallback } from './campaign/events.ts';
 import { engage as battleEngage } from './battle/engine.ts';
 import { stopAnimLoop } from './battle/renderer.ts';
 
@@ -65,12 +65,25 @@ function showPre(enemy: EnemyDef): void {
   curStance = null;
   showScreen('prebattle');
 
-  document.getElementById('eprev')!.innerHTML = `${enemy.isBoss ? '<div style="margin-bottom:4px"><span class="tag gold">BOSS</span></div>' : ''}
-    <div class="en">${enemy.emoji} ${enemy.name}</div><div class="es">${F(enemy.size)} troops</div>
-    <div class="est"><span>ATK <b>${enemy.atk}</b></span><span>DEF <b>${enemy.def}</b></span><span>SPD <b>${enemy.spd}</b></span></div>
-    <div style="font-size:.48rem;color:var(--gldim);margin-top:6px">✦ ${enemy.special}: ${enemy.spDesc}</div>`;
-
   const G = getGameState();
+  const yourAtk = G.f.atk + G.pAtk;
+  const yourDef = G.f.def + G.pDef;
+  const ratio = enemy.size / G.cs;
+  const diff = ratio < 0.6 ? 'EASY' : ratio < 0.9 ? 'MEDIUM' : ratio < 1.3 ? 'HARD' : 'DEADLY';
+  const diffCol = diff === 'EASY' ? 'var(--green)' : diff === 'MEDIUM' ? 'var(--gold)' : 'var(--red)';
+
+  document.getElementById('eprev')!.innerHTML = `${enemy.isBoss ? '<div style="margin-bottom:4px"><span class="tag gold">BOSS</span></div>' : ''}
+    <div class="prebattle-compare">
+      <div class="pre-col you"><div class="pre-label">YOUR ARMY</div>
+        <div class="pre-num">${F(G.cs)} troops</div>
+        <div class="pre-stats"><span>ATK <b>${yourAtk}</b></span><span>DEF <b>${yourDef}</b></span><span>SPD <b>${G.f.spd}</b></span></div></div>
+      <div class="pre-vs"><div style="font-size:.7rem;color:${diffCol}">⚔</div><div class="pre-diff" style="color:${diffCol}">${diff}</div></div>
+      <div class="pre-col enemy"><div class="pre-label">${enemy.emoji} ${enemy.name}</div>
+        <div class="pre-num">${F(enemy.size)} troops</div>
+        <div class="pre-stats"><span>ATK <b>${enemy.atk}</b></span><span>DEF <b>${enemy.def}</b></span><span>SPD <b>${enemy.spd}</b></span></div></div>
+    </div>
+    <div style="font-size:.48rem;color:var(--gldim);margin-top:6px;text-align:center">✦ ${enemy.special}: ${enemy.spDesc}</div>`;
+
   const g = document.getElementById('sgrid')!;
   g.innerHTML = '';
   const stances: Stance[] = [
@@ -155,10 +168,17 @@ function handleBattleEnd(won: boolean, aAlive: number, enemyKilled: number, gold
   if (G.scav > 0) { const sc = Math.floor(enemyKilled * G.scav); G.cs = Math.min(G.mx, G.cs + sc); }
   if (G.recr > 0) { const r = Math.floor(G.mx * G.recr); G.mx += r; G.cs += r; }
   G.bn++;
+
+  const log = document.getElementById('blog')!;
+  const summary = document.createElement('div');
+  summary.className = 'll tac';
+  summary.innerHTML = `📋 BATTLE SUMMARY — Army: ${F(G.cs)}/${F(G.mx)} | 💰 +${goldEarned} gold (Total: ${G.gold})`;
+  log.appendChild(summary);
+
   setTimeout(() => {
     if (G.bn >= 12) showVictory();
     else showReward();
-  }, 1500);
+  }, 2200);
 }
 
 // ── End screens ──
@@ -277,9 +297,9 @@ function handleProgressDone(): void {
 }
 
 // ── Register callbacks to avoid circular imports ──
-registerMapCallbacks(showPre, showRest, showEvent);
+registerMapCallbacks(showPre, showRest, showEvent, showRecruit, showScout);
 registerRewardCallback(() => showMap());
-registerEventCallback(handleProgressDone);
+registerEventCallback(handleProgressDone, showPre, () => showMap());
 
 // ── Wire up global event handlers ──
 initAudioListeners();
