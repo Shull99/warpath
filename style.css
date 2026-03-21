@@ -134,9 +134,13 @@ h1,h2,h3{font-family:'Orbitron',monospace}
 .rs{display:flex;justify-content:space-between;font-size:.58rem;padding:3px 0;border-bottom:1px solid var(--border)}
 .rs .rl{color:var(--muted)}.rs .rv{color:var(--green)}
 
-.audio-toggle{position:fixed;top:8px;right:8px;z-index:100;font-size:.5rem;padding:5px 8px;background:var(--panel);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:'Share Tech Mono',monospace;transition:all .15s}
+.audio-controls{position:fixed;top:8px;right:8px;z-index:100;display:flex;align-items:center;gap:6px}
+.audio-toggle{font-size:.5rem;padding:5px 8px;background:var(--panel);border:1px solid var(--border);color:var(--muted);cursor:pointer;font-family:'Share Tech Mono',monospace;transition:all .15s}
 .audio-toggle:hover{border-color:var(--gdim);color:var(--text)}
 .audio-toggle.on{border-color:var(--gdim);color:var(--green)}
+.vol-slider{-webkit-appearance:none;appearance:none;width:60px;height:3px;background:var(--border);outline:none;cursor:pointer;accent-color:var(--green)}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:10px;height:10px;border-radius:50%;background:var(--green);cursor:pointer}
+.vol-slider::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--green);border:none;cursor:pointer}
 
 .sb-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px}
 .sb-btn{background:transparent;border:1px solid var(--border);color:var(--muted);font-family:'Share Tech Mono',monospace;font-size:.55rem;padding:5px 3px;cursor:pointer;text-align:center;transition:all .12s;line-height:1.3}

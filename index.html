@@ -7,7 +7,10 @@
 </head>
 <body>
 <div class="scan"></div>
-<button class="audio-toggle" id="atog" onclick="toggleAudio()">♪ OFF</button>
+<div class="audio-controls">
+  <button class="audio-toggle" id="atog" onclick="toggleAudio()">♪ OFF</button>
+  <input type="range" class="vol-slider" id="vol" min="0" max="100" value="50" oninput="setVolume(this.value/100)" title="Volume">
+</div>
 
 <div class="screen active" id="title-screen">
   <h1>⚔ WARPATH ⚔</h1>

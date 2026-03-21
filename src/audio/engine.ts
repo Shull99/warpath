@@ -3,6 +3,7 @@ import { PENTA, BASS_MENU, BASS_BATTLE, PAD_FREQS, LFO_CONFIG, TEMPOS } from './
 let AC: AudioContext | null = null;
 let aOn = false;
 let MG: GainNode | null = null;
+let masterVol = 0.5;
 let ambNodes: { o: OscillatorNode; g: GainNode }[] = [];
 let musicNodes: { o: OscillatorNode; g: GainNode }[] = [];
 let musicMode = 'menu';
@@ -24,7 +25,7 @@ export function toggleAudio(): void {
   if (aOn) {
     b.textContent = '♪ ON';
     b.classList.add('on');
-    MG!.gain.setTargetAtTime(0.25, AC!.currentTime, 0.2);
+    MG!.gain.setTargetAtTime(masterVol * 0.5, AC!.currentTime, 0.2);
     startMusic(musicMode);
   } else {
     b.textContent = '♪ OFF';
@@ -32,6 +33,11 @@ export function toggleAudio(): void {
     MG!.gain.setTargetAtTime(0, AC!.currentTime, 0.2);
     stopMusic();
   }
+}
+
+export function setVolume(v: number): void {
+  masterVol = Math.max(0, Math.min(1, v));
+  if (AC && MG) MG.gain.setTargetAtTime(aOn ? masterVol * 0.5 : 0, AC.currentTime, 0.05);
 }
 
 export function setMusicMode(mode: string): void {
@@ -148,30 +154,30 @@ export function sfx(t: string): void {
   if (t === 'click') {
     const o = AC.createOscillator(), g = AC.createGain();
     o.type = 'sine'; o.frequency.value = 600 + Math.random() * 200;
-    g.gain.setValueAtTime(0.04, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.04);
+    g.gain.setValueAtTime(0.025, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.04);
     o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 0.06);
   } else if (t === 'hover') {
     const o = AC.createOscillator(), g = AC.createGain();
     o.type = 'sine'; o.frequency.value = 400;
-    g.gain.setValueAtTime(0.01, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.02);
+    g.gain.setValueAtTime(0.008, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.02);
     o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 0.04);
   } else if (t === 'hit') {
     const o = AC.createOscillator(), g = AC.createGain();
     o.type = 'square'; o.frequency.value = 70 + Math.random() * 50;
-    g.gain.setValueAtTime(0.06, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.07);
+    g.gain.setValueAtTime(0.018, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.07);
     o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 0.1);
   } else if (t === 'special') {
     const o = AC.createOscillator(), g = AC.createGain();
     o.type = 'sawtooth';
     o.frequency.setValueAtTime(200, n); o.frequency.exponentialRampToValueAtTime(900, n + 0.12);
-    g.gain.setValueAtTime(0.05, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.2);
+    g.gain.setValueAtTime(0.02, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.2);
     o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 0.25);
   } else if (t === 'evolve') {
     [400, 520, 660].forEach((f, i) => {
       const o = AC!.createOscillator(), g = AC!.createGain();
       o.type = 'sine'; o.frequency.value = f;
       g.gain.setValueAtTime(0, n + i * 0.07);
-      g.gain.linearRampToValueAtTime(0.04, n + i * 0.07 + 0.03);
+      g.gain.linearRampToValueAtTime(0.025, n + i * 0.07 + 0.03);
       g.gain.exponentialRampToValueAtTime(0.001, n + i * 0.07 + 0.18);
       o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 0.4);
     });
@@ -180,7 +186,7 @@ export function sfx(t: string): void {
       const o = AC!.createOscillator(), g = AC!.createGain();
       o.type = 'sine'; o.frequency.value = f;
       g.gain.setValueAtTime(0, n + i * 0.12);
-      g.gain.linearRampToValueAtTime(0.06, n + i * 0.12 + 0.04);
+      g.gain.linearRampToValueAtTime(0.025, n + i * 0.12 + 0.04);
       g.gain.exponentialRampToValueAtTime(0.001, n + i * 0.12 + 0.5);
       o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 0.9);
     });
@@ -189,7 +195,7 @@ export function sfx(t: string): void {
       const o = AC!.createOscillator(), g = AC!.createGain();
       o.type = 'sawtooth'; o.frequency.value = f;
       g.gain.setValueAtTime(0, n + i * 0.18);
-      g.gain.linearRampToValueAtTime(0.03, n + i * 0.18 + 0.04);
+      g.gain.linearRampToValueAtTime(0.02, n + i * 0.18 + 0.04);
       g.gain.exponentialRampToValueAtTime(0.001, n + i * 0.18 + 0.4);
       o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 1);
     });
@@ -197,14 +203,14 @@ export function sfx(t: string): void {
     const o = AC.createOscillator(), g = AC.createGain();
     o.type = 'triangle';
     o.frequency.setValueAtTime(300, n); o.frequency.linearRampToValueAtTime(600, n + 0.08);
-    g.gain.setValueAtTime(0.06, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.15);
+    g.gain.setValueAtTime(0.025, n); g.gain.exponentialRampToValueAtTime(0.001, n + 0.15);
     o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 0.2);
   } else if (t === 'gold') {
     [800, 1000, 1200].forEach((f, i) => {
       const o = AC!.createOscillator(), g = AC!.createGain();
       o.type = 'sine'; o.frequency.value = f;
       g.gain.setValueAtTime(0, n + i * 0.05);
-      g.gain.linearRampToValueAtTime(0.03, n + i * 0.05 + 0.02);
+      g.gain.linearRampToValueAtTime(0.025, n + i * 0.05 + 0.02);
       g.gain.exponentialRampToValueAtTime(0.001, n + i * 0.05 + 0.1);
       o.connect(g); g.connect(MG!); o.start(n); o.stop(n + 0.3);
     });
